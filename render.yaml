@@ -5,13 +5,12 @@ services:
     name: pricetracker
     runtime: docker
     plan: starter
-    dockerfilePath: pricetracker/Dockerfile
+    dockerfilePath: Dockerfile
     healthCheckPath: /health
     envVars:
+      # La BD vive en Supabase (Postgres free). Acá va el connection string de Supabase.
       - key: DATABASE_URL
-        fromDatabase:
-          name: pricetracker-db
-          property: connectionString
+        sync: false
       - key: BUSD_EMAIL
         sync: false
       - key: BUSD_PASSWORD
@@ -20,11 +19,9 @@ services:
         sync: false
       - key: TELEGRAM_CHAT_ID
         sync: false
+      - key: KILO_API_KEY
+        sync: false
       - key: SCAN_INTERVAL_MINUTES
         sync: false
       - key: ENABLE_SCANNER
         sync: false
-
-databases:
-  - name: pricetracker-db
-    plan: basic-256mb

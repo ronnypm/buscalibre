@@ -1,0 +1,30 @@
+# Backup de la BD de Supabase, una vez al mes, guardado como artefacto de GitHub.
+# El heartbeat evita el pause; este cubre el caso peor: un borrado real del proyecto.
+# Nota: cron no expresa "cada 29 días"; se usa el día 1 de cada mes como aproximación.
+name: Supabase backup
+
+on:
+  schedule:
+    - cron: "10 3 1 * *" # día 1 de cada mes, 03:10 UTC
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: pg_dump de Supabase
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          pg_dump "$DATABASE_URL" --no-owner --no-acl -Fc \
+            | gzip > "pricetracker_$(date +%Y%m%d).dump.gz"
+          ls -lh pricetracker_*.dump.gz
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: pricetracker-backup
+          path: pricetracker_*.dump.gz
+          retention-days: 60

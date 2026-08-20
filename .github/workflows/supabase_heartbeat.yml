@@ -1,0 +1,25 @@
+# Mantiene despierta la BD de Supabase (free) para que no se pause a los 7 días de inactividad.
+# Un solo request al día a la tabla "heartbeat" cuenta como actividad y resetea el timer.
+name: Supabase heartbeat
+
+on:
+  schedule:
+    - cron: "30 12 * * *" # diario 12:30 UTC
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Escribir latido en la tabla heartbeat
+        run: |
+          curl -sS --fail \
+            -X POST "https://${SUPABASE_URL}/rest/v1/heartbeat" \
+            -H "apikey: ${SUPABASE_SERVICE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            -d '{"source": "github-actions"}'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}

@@ -47,3 +47,14 @@ class PricePoint(Base):
     scanned_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
 
     product: Mapped["Product"] = relationship(back_populates="price_points")
+
+
+class Heartbeat(Base):
+    """Latido anti-pausa: fila escrita periódicamente para que Supabase free
+    no considere la BD "inactiva" y la congele. No está relacionada con libros."""
+
+    __tablename__ = "heartbeat"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    source: Mapped[str | None] = mapped_column(String(64), nullable=True)
