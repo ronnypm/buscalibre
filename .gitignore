@@ -1,0 +1,23 @@
+# Credenciales y secretos (nunca subir)
+.env
+.env.bak
+!.env.example
+
+# Base de datos local
+*.db
+*.db-*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Editor
+.vscode/
+.idea/
+
+# SO
+.DS_Store
